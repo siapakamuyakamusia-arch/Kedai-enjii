@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Katalog - Kedai Anggie</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Quicksand', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            color: #5c3a4d;
+            min-height: 100vh;
+            padding-bottom: 80px;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* LATAR BELAKANG CUTE (POLKADOT BERSIH) */
+        .bg-cute {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #ffc0cb; 
+            z-index: -1;
+        }
+        .bg-cute::after {
+            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: radial-gradient(#ffffff 4px, transparent 4px), radial-gradient(#ffffff 4px, transparent 4px);
+            background-size: 50px 50px; background-position: 0 0, 25px 25px; opacity: 0.6;
+        }
+
+        /* HEADER ATAS */
+        .top-header {
+            background: rgba(255, 192, 203, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: 0 4px 15px rgba(255, 182, 193, 0.4);
+        }
+        .top-header h1 { font-size: 16px; font-weight: 800; color: #d81b60; display: flex; align-items: center; gap: 10px; }
+        .top-header .icons { display: flex; gap: 15px; color: #f06292; font-size: 18px; }
+
+        .main-container { padding: 15px 0; max-width: 600px; margin: 0 auto; }
+
+        /* MENU TAB KATEGORI */
+        .category-scroll {
+            display: flex; overflow-x: auto; gap: 10px; padding: 10px 15px 15px 15px;
+            scrollbar-width: none; flex-wrap: nowrap; -webkit-overflow-scrolling: touch;
+        }
+        .category-scroll::-webkit-scrollbar { display: none; }
+        .cat-btn {
+            background: rgba(255, 255, 255, 0.9); padding: 10px 20px; border-radius: 20px;
+            font-weight: 700; font-size: 13px; color: #f06292; white-space: nowrap;
+            box-shadow: 0 4px 10px rgba(255, 182, 193, 0.4); border: 2px dashed #ffb6c1;
+            cursor: pointer; text-transform: uppercase; transition: all 0.3s; flex-shrink: 0;
+        }
+        .cat-btn.active { background: #f06292; color: #fff; border-color: #fff; }
+
+        /* SISTEM TAB KONTEN */
+        .tab-content { display: none; animation: fadeIn 0.4s ease; }
+        .tab-content.active-tab { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .section-title {
+            font-size: 16px; font-weight: 800; color: #d81b60; margin: 10px 15px 15px 15px;
+            background: rgba(255, 255, 255, 0.9); padding: 10px 15px; border-radius: 12px;
+            border-left: 5px solid #d81b60; letter-spacing: 1px; display: flex;
+            align-items: center; justify-content: space-between;
+            box-shadow: 0 4px 10px rgba(255, 182, 193, 0.3);
+        }
+
+        /* WADAH KARTU GESER (CAROUSEL) */
+        .card-scroll-container {
+            display: flex; overflow-x: auto; gap: 15px; padding: 0 15px 20px 15px;
+            scrollbar-width: none; flex-wrap: nowrap; scroll-snap-type: x mandatory; 
+            -webkit-overflow-scrolling: touch;
+        }
+        .card-scroll-container::-webkit-scrollbar { display: none; }
+
+        /* KARTU ITEM */
+        .app-card {
+            background-color: #1a2235; border-radius: 25px; padding: 20px; color: white;
+            box-shadow: 0 8px 20px rgba(26, 34, 53, 0.2); position: relative;
+            flex: 0 0 85%; max-width: 320px; scroll-snap-align: center; 
+            display: flex; flex-direction: column; border: 2px solid rgba(255,255,255,0.1);
+        }
+        .app-card.info-card { background-color: #2c2c2c; flex: 0 0 90%; }
+        
+        .card-header {
+            font-size: 15px; font-weight: 800; margin-bottom: 15px; display: flex;
+            align-items: center; gap: 8px; letter-spacing: 0.5px; text-transform: uppercase;
+            border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 10px; color: #ffb6c1;
+        }
+
+        /* DAFTAR HARGA */
+        .price-list { list-style: none; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed rgba(255,255,255,0.2); flex-grow: 1; }
+        .price-list li { 
+            font-size: 13px; 
+            margin-bottom: 10px; 
+            display: flex; 
+            align-items: flex-start; 
+            line-height: 1.5; 
+            color: #e0e0e0; 
+            cursor: pointer;
+            padding: 4px 6px;
+            border-radius: 8px;
+            transition: background 0.2s, color 0.2s;
+        }
+        .price-list li:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffb74d;
+        }
+
+        .text-list li { font-weight: 600; color: #fff; cursor: default; }
+        .text-list li:hover { background: transparent; color: #fff; }
+
+        .sub-title { color: #f48fb1; font-weight: 800; margin-top: 15px; margin-bottom: 5px; display: block; font-size: 12px; letter-spacing: 0.5px; }
+        .price-val { font-weight: 800; color: #ffb74d; margin-left: auto; padding-left: 10px; }
+
+        /* BAGIAN ATTENTION */
+        .attention-box { font-size: 12px; color: #bdbdbd; margin-bottom: 15px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 12px; }
+        .attention-title { font-size: 13px; font-weight: 800; margin-bottom: 8px; display: flex; align-items: center; gap: 5px; color: #fff; }
+        .attention-list { list-style: none; }
+        .attention-list li { margin-bottom: 6px; display: flex; align-items: flex-start; line-height: 1.4; }
+        .attention-list li::before { content: '♡'; margin-right: 8px; font-size: 12px; color: #f48fb1; }
+
+        /* TOMBOL PESAN */
+        .order-btn {
+            display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%;
+            background: #d81b60; color: white; text-decoration: none; padding: 12px;
+            border-radius: 15px; font-weight: 800; margin-top: auto; font-size: 14px;
+            transition: background 0.3s, box-shadow 0.3s; box-shadow: 0 4px 10px rgba(216, 27, 96, 0.4);
+        }
+        .order-btn:hover { background: #f06292; }
+
+        /* Efek Menyala Saat Discroll ke Tombol Order */
+        .highlight-btn {
+            animation: pulseBtn 1s ease infinite;
+            background: #ff4081 !important;
+            box-shadow: 0 0 15px #ff4081 !important;
+        }
+        @keyframes pulseBtn {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* BOTTOM NAVIGATION */
+        .bottom-nav {
+            position: fixed; bottom: 0; width: 100%; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);
+            display: flex; justify-content: space-around; padding: 15px 0;
+            box-shadow: 0 -5px 20px rgba(255, 182, 193, 0.4); z-index: 100;
+            border-top-left-radius: 25px; border-top-right-radius: 25px; border-top: 2px dashed #ffb6c1;
+        }
+        .bottom-nav i { font-size: 22px; color: #f06292; transition: 0.3s; cursor: pointer;}
+        .bottom-nav i.active { color: #d81b60; transform: scale(1.1); }
+        .bottom-nav i:hover { color: #d81b60; transform: scale(1.1);}
+    </style>
+</head>
+<body>
+
+    <div class="bg-cute"></div>
+
+    <div class="top-header">
+        <h1><img src="images/fotoenji.jpg" style="width:25px; height:25px; border-radius:50%; object-fit:cover; border:2px solid #fff;" onerror="this.src='fotoenji.jpg'"> KEDAI ANGGIE</h1>
+        <div class="icons">
+            <i class="fa-solid fa-bell"></i>
+        </div>
+    </div>
+
+    <div class="main-container">
+        
+        <!-- MENU TAB -->
+        <div class="category-scroll">
+            <div class="cat-btn active" onclick="openTab(event, 'tab-information')">INFORMATION</div>
+            <div class="cat-btn" onclick="openTab(event, 'tab-editing')">EDITING</div>
+            <div class="cat-btn" onclick="openTab(event, 'tab-streaming')">STREAMING</div>
+            <div class="cat-btn" onclick="openTab(event, 'tab-music')">MUSIC</div>
+            <div class="cat-btn" onclick="openTab(event, 'tab-education')">EDUCATION & AI</div>
+            <div class="cat-btn" onclick="openTab(event, 'tab-social')">SOCIAL & TOOLS</div>
+            <div class="cat-btn" onclick="openTab(event, 'tab-topup')">TOPUP & SERVICES</div>
+        </div>
+
+        <!-- ================= TAB 1: INFORMATION ================= -->
+        <div id="tab-information" class="tab-content active-tab">
+            <div class="section-title"><span>INFORMATION</span><i class="fa-solid fa-circle-info" style="color:#f8bbd0;"></i></div>
+            <div class="card-scroll-container">
+                <div class="app-card info-card">
+                    <div class="card-header"><i class="fa-solid fa-star"></i> Welcome ! ♡</div>
+                    <ul class="price-list text-list" style="border:none;">
+                        <li>Hai Semua! Berikut adalah pricelist aplikasi premium, silahkan di lihat yaa.</li><br>
+                        <li>Jika ingin order, silakan klik salah satu produk di kategori lalu klik tombol order.</li><br>
+                        <li>SEGALA BENTUK TRANSAKSI HANYA MELAKUKAN PAYMENT BY QRIS ALLPAY</li><br>
+                        <li>Selamat berbelanja ♡</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 2: EDITING ================= -->
+        <div id="tab-editing" class="tab-content">
+            <div class="section-title"><span>EDITING</span><i class="fa-solid fa-wand-magic-sparkles" style="color:#f8bbd0;"></i></div>
+            <div class="card-scroll-container">
+                
+                <!-- KARTU APLIKASI: ALIGHT MOTION -->
+                <div class="app-card" data-app="Alight Motion">
+                    <div class="card-header"><i class="fa-solid fa-clapperboard"></i> ALIGHT MOTION</div>
+                    <ul class="price-list">
+                        <span class="sub-title">AM PRIV ACC</span>
+                        <li onclick="selectProduct(this, 'AM Priv Acc Buyer - Rp 5.000')">AM Priv Acc Buyer <span class="price-val">Rp 5.000</span></li>
+                        <li onclick="selectProduct(this, 'AM Priv Acc Seller - Rp 10.000')">AM Priv Acc Seller <span class="price-val">Rp 10.000</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">ATTENTION ⚠</div>
+                        <ul class="attention-list">
+                            <li>Berdurasi 1 tahun</li>
+                            <li>Wajib SS login setelah done</li>
+                            <li>All trx no reff</li>
+                            <li>Proses 1x24 jam</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Alight Motion')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order Alight Motion</a>
+                </div>
+
+                <!-- KARTU: EDIT JJ ALIGHT MOTION -->
+                <div class="app-card" data-app="Edit JJ Alight Motion">
+                    <div class="card-header"><i class="fa-solid fa-video"></i> EDIT JJ ALIGHT MOTION</div>
+                    <ul class="price-list">
+                        <span class="sub-title">JASA EDIT JJ</span>
+                        <li onclick="selectProduct(this, '1 VT - Rp 5.000')">1 VT <span class="price-val">Rp 5.000</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">ATTENTION ⚠</div>
+                        <ul class="attention-list">
+                            <li>JJ game / fuu beat beda harga</li>
+                            <li>Free CC + HD SW</li>
+                            <li>Preset dari kamu</li>
+                            <li>All trx no reff</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Edit JJ Alight Motion')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order Edit JJ</a>
+                </div>
+
+                <!-- KARTU: CAPCUT PRO -->
+                <div class="app-card" data-app="Capcut Pro">
+                    <div class="card-header"><i class="fa-solid fa-scissors"></i> CAPCUT PRO</div>
+                    <ul class="price-list">
+                        <span class="sub-title">CAPCUT SHARING & PRIVAT</span>
+                        <li onclick="selectProduct(this, '7d priv via invit - Rp 4.000')">7d priv via invit <span class="price-val">Rp 4.000</span></li>
+                        <li onclick="selectProduct(this, '7h priv acc seller - Rp 5.000')">7h priv acc seller <span class="price-val">Rp 5.000</span></li>
+                        <li onclick="selectProduct(this, '1b priv gar 7d - Rp 10.000')">1b priv gar 7d <span class="price-val">Rp 10.000</span></li>
+                        <li onclick="selectProduct(this, '1b priv full garansi - Rp 15.000')">1b priv full garansi <span class="price-val">Rp 15.000</span></li>
+                        <span class="sub-title">CAPCUT LAMA</span>
+                        <li onclick="selectProduct(this, '7 hari - Rp 9.500')">7 hari <span class="price-val">Rp 9.500</span></li>
+                        <li onclick="selectProduct(this, '1 bulan - Rp 19.500')">1 bulan <span class="price-val">Rp 19.500</span></li>
+                        <li onclick="selectProduct(this, '1 bulan privat - Rp 30.000')">1 bulan privat <span class="price-val">Rp 30.000</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">ATTENTION ⚠</div>
+                        <ul class="attention-list">
+                            <li>Wajib SS setelah login max 1x24 jam</li>
+                            <li>All trx no reff</li>
+                            <li>Usahakan buy sebelum H karena admin bisa ada urusan mendadak</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Capcut Pro')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order Capcut</a>
+                </div>
+
+                <!-- KARTU: CANVA -->
+                <div class="app-card" data-app="Canva Premium">
+                    <div class="card-header"><i class="fa-solid fa-pen-nib"></i> CANVA PREMIUM</div>
+                    <ul class="price-list">
+                        <span class="sub-title">CANVA MEMBER</span>
+                        <li onclick="selectProduct(this, '1 hari - Rp 300')">1 hari <span class="price-val">Rp 300</span></li>
+                        <li onclick="selectProduct(this, '1 bulan - Rp 3.000')">1 bulan <span class="price-val">Rp 3.000</span></li>
+                        <li onclick="selectProduct(this, '2 bulan - Rp 5.000')">2 bulan <span class="price-val">Rp 5.000</span></li>
+                        <li onclick="selectProduct(this, '3 bulan - Rp 8.000')">3 bulan <span class="price-val">Rp 8.000</span></li>
+                        <li onclick="selectProduct(this, '6 bulan - Rp 12.000')">6 bulan <span class="price-val">Rp 12.000</span></li>
+                        <li onclick="selectProduct(this, '1 tahun - Rp 15.000')">1 tahun <span class="price-val">Rp 15.000</span></li>
+                        <li onclick="selectProduct(this, 'Lifetime - Rp 20.000')">Lifetime <span class="price-val">Rp 20.000</span></li>
+                        <span class="sub-title">ADD-ON & TEAM</span>
+                        <li onclick="selectProduct(this, 'Designer - Rp 2.000')">Designer <span class="price-val">Rp 2.000</span></li>
+                        <li onclick="selectProduct(this, 'Admin 1B (Inv 100 mem) - Rp 8.000')">Admin 1B (Inv 100 mem) <span class="price-val">Rp 8.000</span></li>
+                        <li onclick="selectProduct(this, 'Owner 1B (Inv 500 mem + 5 adm) - Rp 12.000')">Owner 1B (Inv 500 mem + 5 adm) <span class="price-val">Rp 12.000</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">ATTENTION ⚠</div>
+                        <ul class="attention-list">
+                            <li>All trx no reff</li>
+                            <li>Bisa via inv / link</li>
+                            <li>Proses no rusuh!</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Canva Premium')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order Canva</a>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ================= TAB 3: STREAMING ================= -->
+        <div id="tab-streaming" class="tab-content">
+            <div class="section-title"><span>STREAMING</span><i class="fa-solid fa-tv" style="color:#f8bbd0;"></i></div>
+            <div class="card-scroll-container">
+                
+                <div class="app-card" data-app="Netflix Premium">
+                    <div class="card-header"><i class="fa-solid fa-play"></i> NETFLIX PREMIUM</div>
+                    <ul class="price-list">
+                        <span class="sub-title">NETFLIX</span>
+                        <li onclick="selectProduct(this, '1u 1p 1 bulan - Rp 33.000')">1u 1p 1 bulan <span class="price-val">Rp 33.000</span></li>
+                        <li onclick="selectProduct(this, '2u 1p 1 bulan - Rp 25.000')">2u 1p 1 bulan <span class="price-val">Rp 25.000</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">ATTENTION ⚠</div>
+                        <ul class="attention-list">
+                            <li>Netflix limit screen 4/5</li>
+                            <li>Log-in by code</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Netflix Premium')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order Netflix</a>
+                </div>
+
+                <div class="app-card" data-app="YouTube Premium">
+                    <div class="card-header"><i class="fa-brands fa-youtube"></i> YOUTUBE PREMIUM</div>
+                    <ul class="price-list">
+                        <span class="sub-title">YOUTUBE FAMPLAN</span>
+                        <li onclick="selectProduct(this, '1 month - Rp 4.000')">1 month <span class="price-val">Rp 4.000</span></li>
+                        <span class="sub-title">YOUTUBE HEAD / ADMIN</span>
+                        <li onclick="selectProduct(this, '1 month (bisa inv 5 email) - Rp 7.000')">1 month (bisa inv 5 email) <span class="price-val">Rp 7.000</span></li>
+                        <span class="sub-title">YOUTUBE INDPLAN</span>
+                        <li onclick="selectProduct(this, '1 month fulgar - Rp 6.500')">1 month fulgar <span class="price-val">Rp 6.500</span></li>
+                        <li onclick="selectProduct(this, '3 month nogar - Rp 20.000')">3 month nogar <span class="price-val">Rp 20.000</span></li>
+                        <li onclick="selectProduct(this, '3 month fulgar - Rp 35.000')">3 month fulgar <span class="price-val">Rp 35.000</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">ATTENTION ⚠</div>
+                        <ul class="attention-list">
+                            <li>Famplan only email cust (cuma bisa invt 2x)</li>
+                            <li>Indpl / Head need email pw fresh</li>
+                            <li>Order wajib sabar & wajib tanyakan stok</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'YouTube Premium')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order YouTube</a>
+                </div>
+
+                <!-- KARTU: DISNEY+ & HOTSTAR -->
+                <div class="app-card" data-app="Disney Hotstar">
+                    <div class="card-header"><i class="fa-solid fa-film"></i> DISNEY+ HOTSTAR</div>
+                    <ul class="price-list">
+                        <span class="sub-title">PREMIUM PLAN</span>
+                        <li onclick="selectProduct(this, '3 day - Rp 13.000')">3 day <span class="price-val">Rp 13.000</span></li>
+                        <li onclick="selectProduct(this, '7 day - Rp 16.000')">7 day <span class="price-val">Rp 16.000</span></li>
+                        <li onclick="selectProduct(this, '3u 1 month - Rp 53.000')">3u 1 month <span class="price-val">Rp 53.000</span></li>
+                        <li onclick="selectProduct(this, '1 month private (mbo) - Rp 119.000')">1 month private (mbo) <span class="price-val">Rp 119.000</span></li>
+                        <span class="sub-title">BASIC PLAN</span>
+                        <li onclick="selectProduct(this, '3u 1 moontth - Rp 35.000')">3u 1 moontth <span class="price-val">Rp 35.000</span></li>
+                        <li onclick="selectProduct(this, '1 month private - Rp 90.000')">1 month private <span class="price-val">Rp 90.000</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">ATTENTION ⚠</div>
+                        <ul class="attention-list">
+                            <li>Akun dari admin/seller</li>
+                            <li>Wajib tanya stock, dan wajib janjin jika utp</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Disney Hotstar')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order Disney+</a>
+                </div>
+
+                <!-- KARTU: BSTATTION -->
+                <div class="app-card" data-app="Bstation">
+                    <div class="card-header"><i class="fa-solid fa-tv"></i> BSTATSION</div>
+                    <ul class="price-list">
+                        <span class="sub-title">BSTATTION PLAN</span>
+                        <li onclick="selectProduct(this, 'Sharing 1 month - Rp 9.500')">Sharing 1 month <span class="price-val">Rp 9.500</span></li>
+                        <li onclick="selectProduct(this, 'Sharing 1 year - Rp 15.500')">Sharing 1 year <span class="price-val">Rp 15.500</span></li>
+                        <li onclick="selectProduct(this, 'Private 1 month - Rp 37.000')">Private 1 month <span class="price-val">Rp 37.000</span></li>
+                        <li onclick="selectProduct(this, 'Private 1 year - Rp 199.000')">Private 1 year <span class="price-val">Rp 199.000</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">ATTENTION ⚠</div>
+                        <ul class="attention-list">
+                            <li>Sharing account dari seller</li>
+                            <li>Private bisa account buyer</li>
+                            <li>Sharing 1 tahun garansi 6 bulan</li>
+                            <li>Private full garansi</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Bstation')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order Bstation</a>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ================= TAB 4: MUSIC ================= -->
+        <div id="tab-music" class="tab-content">
+            <div class="section-title"><span>MUSIC</span><i class="fa-solid fa-music" style="color:#f8bbd0;"></i></div>
+            <div class="card-scroll-container">
+                
+                <!-- KARTU: APPLE MUSIC -->
+                <div class="app-card" data-app="Apple Music">
+                    <div class="card-header"><i class="fa-brands fa-apple"></i> APPLE MUSIC</div>
+                    <ul class="price-list">
+                        <span class="sub-title">IMESS / FAMILY PLAN</span>
+                        <li onclick="selectProduct(this, '1 bulan - Rp 5.000')">1 bulan <span class="price-val">Rp 5.000</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">ATTENTION ⚠</div>
+                        <ul class="attention-list">
+                            <li>Akun dari buyer / customer</li>
+                            <li>Bisa untuk perpanjang</li>
+                            <li>Req akun dari admin +2,5k</li>
+                            <li>Durasi diatas 1 bulan straight subs / no renew</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Apple Music')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order Apple Music</a>
+                </div>
+
+                <!-- KARTU: SPOTIFY -->
+                <div class="app-card" data-app="Spotify">
+                    <div class="card-header"><i class="fa-brands fa-spotify"></i> SPOTIFY</div>
+                    <ul class="price-list">
+                        <span class="sub-title">SPOTIFY PREMIUM</span>
+                        <li onclick="selectProduct(this, '1 month fam - Rp 15.000')">1 month fam <span class="price-val">Rp 15.000</span></li>
+                        <li onclick="selectProduct(this, '2 month fam - Rp 25.000')">2 month fam <span class="price-val">Rp 25.000</span></li>
+                        <li onclick="selectProduct(this, '1 month indp - Rp 16.500')">1 month indp <span class="price-val">Rp 16.500</span></li>
+                        <li onclick="selectProduct(this, '3 month indp - Rp 30.000')">3 month indp <span class="price-val">Rp 30.000</span></li>
+                        <li onclick="selectProduct(this, '1b indp ngar - Rp 7.500')">1b indp ngar <span class="price-val">Rp 7.500</span></li>
+                        <li onclick="selectProduct(this, '1 bln famplan (lama) - Rp 25.000')">1 bln famplan (lama) <span class="price-val">Rp 25.000</span></li>
+                        <li onclick="selectProduct(this, '1 bln indplan (lama) - Rp 28.000')">1 bln indplan (lama) <span class="price-val">Rp 28.000</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">ATTENTION ⚠</div>
+                        <ul class="attention-list">
+                            <li>No rush, fullgar bila ada ss max 1x24</li>
+                            <li>Acc seller, priv, only andro</li>
+                            <li>Bisa perpanjang akun lama</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Spotify')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order Spotify</a>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ================= TAB 5: EDUCATION ================= -->
+        <div id="tab-education" class="tab-content">
+            <div class="section-title"><span>EDUCATION & AI</span><i class="fa-solid fa-robot" style="color:#f8bbd0;"></i></div>
+            <div class="card-scroll-container">
+                
+                <div class="app-card" data-app="ChatGPT">
+                    <div class="card-header"><i class="fa-solid fa-robot"></i> CHATGPT</div>
+                    <ul class="price-list">
+                        <span class="sub-title">AI CHATGPT PLUS</span>
+                        <li onclick="selectProduct(this, '1 bln plus 8u - Rp 15.000')">1 bln plus 8u <span class="price-val">Rp 15.000</span></li>
+                        <li onclick="selectProduct(this, '1 bln plus - Rp 60.000')">1 bln plus <span class="price-val">Rp 60.000</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">ATTENTION ⚠</div>
+                        <ul class="attention-list">
+                            <li>Email dari seller</li>
+                            <li>Garansi sesuai S&K</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'ChatGPT')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order ChatGPT</a>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ================= TAB 6: SOCIAL & TOOLS ================= -->
+        <div id="tab-social" class="tab-content">
+            <div class="section-title"><span>SOCIAL & TOOLS</span><i class="fa-solid fa-shield-halved" style="color:#f8bbd0;"></i></div>
+            <div class="card-scroll-container">
+                
+                <!-- KARTU: JASA BUKA IG KEBOKIR -->
+                <div class="app-card" data-app="Buka IG Keblokir">
+                    <div class="card-header"><i class="fa-brands fa-instagram"></i> BUKA IG KEBOKIR</div>
+                    <ul class="price-list">
+                        <span class="sub-title">JASA UNBLOCK IG</span>
+                        <li onclick="selectProduct(this, 'Jasa Buka IG Keblokir - Rp 20.000')">Jasa Buka IG Keblokir <span class="price-val">Rp 20.000</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">ATTENTION ⚠</div>
+                        <ul class="attention-list">
+                            <li>All trx no reff kecuali kesalahan own</li>
+                            <li>Tidak butuh password, hanya username saja</li>
+                            <li>Dijamin work dan aman, sistem manual</li>
+                            <li>Sistem memakai 3 cara</li>
+                            <li>Selain keblokir, bisa mengatasi banding dari pihak IG</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Buka IG Keblokir')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order Jasa IG</a>
+                </div>
+
+                <!-- KARTU: KEBSOS INSTAGRAM -->
+                <div class="app-card" data-app="Kebsos Instagram">
+                    <div class="card-header"><i class="fa-brands fa-instagram"></i> KEBSOS INSTAGRAM</div>
+                    <ul class="price-list">
+                        <span class="sub-title">MENU FOLLOWERS INDO</span>
+                        <li onclick="selectProduct(this, '200 Followers - Rp 15.000')">200 Followers <span class="price-val">Rp 15.000</span></li>
+                        <li onclick="selectProduct(this, '300 Followers - Rp 18.500')">300 Followers <span class="price-val">Rp 18.500</span></li>
+                        <li onclick="selectProduct(this, '500 Followers - Rp 40.000')">500 Followers <span class="price-val">Rp 40.000</span></li>
+                        <li onclick="selectProduct(this, '800 Followers - Rp 50.000')">800 Followers <span class="price-val">Rp 50.000</span></li>
+                        <li onclick="selectProduct(this, '1.000 Followers - Rp 65.000')">1.000 Followers <span class="price-val">Rp 65.000</span></li>
+                        <li onclick="selectProduct(this, '3.000 Followers - Rp 180.000')">3.000 Followers <span class="price-val">Rp 180.000</span></li>
+                        <span class="sub-title">MENU LIKE INDO</span>
+                        <li onclick="selectProduct(this, '100 Like - Rp 6.500')">100 Like <span class="price-val">Rp 6.500</span></li>
+                        <li onclick="selectProduct(this, '200 Like - Rp 8.500')">200 Like <span class="price-val">Rp 8.500</span></li>
+                        <li onclick="selectProduct(this, '300 Like - Rp 14.500')">300 Like <span class="price-val">Rp 14.500</span></li>
+                        <li onclick="selectProduct(this, '400 Like - Rp 17.000')">400 Like <span class="price-val">Rp 17.000</span></li>
+                        <li onclick="selectProduct(this, '500 Like - Rp 20.000')">500 Like <span class="price-val">Rp 20.000</span></li>
+                        <span class="sub-title">MENU VIEW INDO</span>
+                        <li onclick="selectProduct(this, '1.000 View - Rp 800')">1.000 View <span class="price-val">Rp 800</span></li>
+                        <li onclick="selectProduct(this, '2.000 View - Rp 1.600')">2.000 View <span class="price-val">Rp 1.600</span></li>
+                        <li onclick="selectProduct(this, '3.000 View - Rp 2.900')">3.000 View <span class="price-val">Rp 2.900</span></li>
+                        <li onclick="selectProduct(this, '4.000 View - Rp 3.500')">4.000 View <span class="price-val">Rp 3.500</span></li>
+                        <li onclick="selectProduct(this, '5.000 View - Rp 4.500')">5.000 View <span class="price-val">Rp 4.500</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">ATTENTION ⚠</div>
+                        <ul class="attention-list">
+                            <li>Proses no rush, all trx no reff</li>
+                            <li>Max proses 1-7h, komplain pas 7h</li>
+                            <li>Wajib publik akun selama diproses</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Kebsos Instagram')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order Kebsos IG</a>
+                </div>
+
+                <!-- KARTU: KEBSOS TIKTOK INDO -->
+                <div class="app-card" data-app="Kebsos TikTok Indo">
+                    <div class="card-header"><i class="fa-brands fa-tiktok"></i> KEBSOS TIKTOK INDO</div>
+                    <ul class="price-list">
+                        <span class="sub-title">MENU FOLLOWS</span>
+                        <li onclick="selectProduct(this, '100 Followers - Rp 15.000')">100 Followers <span class="price-val">Rp 15.000</span></li>
+                        <li onclick="selectProduct(this, '200 Followers - Rp 25.000')">200 Followers <span class="price-val">Rp 25.000</span></li>
+                        <li onclick="selectProduct(this, '500 Followers - Rp 35.000')">500 Followers <span class="price-val">Rp 35.000</span></li>
+                        <li onclick="selectProduct(this, '1.000 Followers - Rp 90.000')">1.000 Followers <span class="price-val">Rp 90.000</span></li>
+                        <span class="sub-title">MENU LIKE</span>
+                        <li onclick="selectProduct(this, '100 Like - Rp 5.000')">100 Like <span class="price-val">Rp 5.000</span></li>
+                        <li onclick="selectProduct(this, '200 Like - Rp 8.500')">200 Like <span class="price-val">Rp 8.500</span></li>
+                        <li onclick="selectProduct(this, '300 Like - Rp 12.500')">300 Like <span class="price-val">Rp 12.500</span></li>
+                        <li onclick="selectProduct(this, '400 Like - Rp 20.000')">400 Like <span class="price-val">Rp 20.000</span></li>
+                        <li onclick="selectProduct(this, '500 Like - Rp 22.500')">500 Like <span class="price-val">Rp 22.500</span></li>
+                        <span class="sub-title">MENU VIEW & SHARE</span>
+                        <li onclick="selectProduct(this, '1.000 View - Rp 2.000')">1.000 View <span class="price-val">Rp 2.000</span></li>
+                        <li onclick="selectProduct(this, '3.000 View - Rp 3.000')">3.000 View <span class="price-val">Rp 3.000</span></li>
+                        <li onclick="selectProduct(this, '6.000 View - Rp 4.500')">6.000 View <span class="price-val">Rp 4.500</span></li>
+                        <li onclick="selectProduct(this, '10.000 View - Rp 7.000')">10.000 View <span class="price-val">Rp 7.000</span></li>
+                        <li onclick="selectProduct(this, '500 Share - Rp 4.500')">500 Share <span class="price-val">Rp 4.500</span></li>
+                        <li onclick="selectProduct(this, '1.000 Share - Rp 7.000')">1.000 Share <span class="price-val">Rp 7.000</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">ATTENTION ⚠</div>
+                        <ul class="attention-list">
+                            <li>Wajib publik selama proses, hanya butuh username/link</li>
+                            <li>Est 1-7d paling lambat 30d</li>
+                            <li>Tidak ada permanen, moots aja bisa turun</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Kebsos TikTok Indo')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order TikTok Indo</a>
+                </div>
+
+                <!-- KARTU: KEBSOS TIKTOK BULE -->
+                <div class="app-card" data-app="Kebsos TikTok Bule">
+                    <div class="card-header"><i class="fa-brands fa-tiktok"></i> KEBSOS TIKTOK BULE</div>
+                    <ul class="price-list">
+                        <span class="sub-title">MENU FOLLOWERS</span>
+                        <li onclick="selectProduct(this, '100 Followers - Rp 10.000')">100 Followers <span class="price-val">Rp 10.000</span></li>
+                        <li onclick="selectProduct(this, '200 Followers - Rp 25.000')">200 Followers <span class="price-val">Rp 25.000</span></li>
+                        <li onclick="selectProduct(this, '500 Followers - Rp 30.000')">500 Followers <span class="price-val">Rp 30.000</span></li>
+                        <li onclick="selectProduct(this, '1.000 Followers - Rp 70.000')">1.000 Followers <span class="price-val">Rp 70.000</span></li>
+                        <span class="sub-title">MENU LIKE</span>
+                        <li onclick="selectProduct(this, '100 Like - Rp 1.500')">100 Like <span class="price-val">Rp 1.500</span></li>
+                        <li onclick="selectProduct(this, '200 Like - Rp 3.000')">200 Like <span class="price-val">Rp 3.000</span></li>
+                        <li onclick="selectProduct(this, '300 Like - Rp 5.500')">300 Like <span class="price-val">Rp 5.500</span></li>
+                        <li onclick="selectProduct(this, '400 Like - Rp 10.000')">400 Like <span class="price-val">Rp 10.000</span></li>
+                        <li onclick="selectProduct(this, '500 Like - Rp 15.500')">500 Like <span class="price-val">Rp 15.500</span></li>
+                        <span class="sub-title">MENU VIEW & SHARE</span>
+                        <li onclick="selectProduct(this, '1.000 View - Rp 2.000')">1.000 View <span class="price-val">Rp 2.000</span></li>
+                        <li onclick="selectProduct(this, '3.000 View - Rp 3.000')">3.000 View <span class="price-val">Rp 3.000</span></li>
+                        <li onclick="selectProduct(this, '6.000 View - Rp 4.500')">6.000 View <span class="price-val">Rp 4.500</span></li>
+                        <li onclick="selectProduct(this, '10.000 View - Rp 7.000')">10.000 View <span class="price-val">Rp 7.000</span></li>
+                        <li onclick="selectProduct(this, '500 Share - Rp 4.500')">500 Share <span class="price-val">Rp 4.500</span></li>
+                        <li onclick="selectProduct(this, '1.000 Share - Rp 7.000')">1.000 Share <span class="price-val">Rp 7.000</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">ATTENTION ⚠</div>
+                        <ul class="attention-list">
+                            <li>Wajib publik selama proses</li>
+                            <li>Hanya butuh username/link</li>
+                            <li>Est 1-7d paling lambat 30d</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Kebsos TikTok Bule')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order Kebsos TikTok</a>
+                </div>
+
+                <!-- KARTU: BUG WA -->
+                <div class="app-card" data-app="Bug WhatsApp">
+                    <div class="card-header"><i class="fa-brands fa-whatsapp"></i> BUG WHATSAPP</div>
+                    <ul class="price-list">
+                        <span class="sub-title">PRICELIST BUG WA</span>
+                        <li onclick="selectProduct(this, 'Per Nomor - Rp 5.000')">Per Nomor <span class="price-val">Rp 5.000</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">ATTENTION ⚠</div>
+                        <ul class="attention-list">
+                            <li>Wajib tanya ready bug WA atau tidak</li>
+                            <li>Proses sabar, bot bug harus dijeda 5 menit</li>
+                            <li>Dijamin langsung C1</li>
+                            <li>All trx no reff</li>
+                            <li>Be a smart buyer</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Bug WhatsApp')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order Bug WA</a>
+                </div>
+
+                <!-- KARTU: SEWA BOT -->
+                <div class="app-card" data-app="Sewa Bot WhatsApp">
+                    <div class="card-header"><i class="fa-solid fa-robot"></i> SEWA BOT WHATSAPP</div>
+                    <ul class="price-list">
+                        <span class="sub-title">PERBUAN (1 BULAN)</span>
+                        <li onclick="selectProduct(this, 'Bot Fun Perbuan - Rp 8.000')">Bot Fun Perbuan <span class="price-val">Rp 8.000</span></li>
+                        <li onclick="selectProduct(this, 'Bot Store/Ress/Arisan Perbuan - Rp 10.000')">Bot Store/Ress/Arisan Perbuan <span class="price-val">Rp 10.000</span></li>
+                        <span class="sub-title">PERMANEN</span>
+                        <li onclick="selectProduct(this, 'Bot Fun Permanen - Rp 50.000')">Bot Fun Permanen <span class="price-val">Rp 50.000</span></li>
+                        <li onclick="selectProduct(this, 'Bot Store/Ress/Arisan Permanen - Rp 80.000')">Bot Store/Ress/Arisan Permanen <span class="price-val">Rp 80.000</span></li>
+                        <span class="sub-title">ADD-ON</span>
+                        <li onclick="selectProduct(this, 'Perpanjangan Bot - Rp 5.000')">Perpanjangan Bot <span class="price-val">Rp 5.000</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">ATTENTION ⚠</div>
+                        <ul class="attention-list">
+                            <li>Kick bot = hangus!</li>
+                            <li>Bot mati ada kendala</li>
+                            <li>Tidak trima pindah grup dengan alasan apapun</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Sewa Bot WhatsApp')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order Sewa Bot</a>
+                </div>
+
+                <!-- KARTU: MURID BUG -->
+                <div class="app-card" data-app="Murid Bug">
+                    <div class="card-header"><i class="fa-solid fa-skull"></i> MURID BUG</div>
+                    <ul class="price-list">
+                        <span class="sub-title">JOIN KELAS MURID BUG</span>
+                        <li onclick="selectProduct(this, 'Murid Bug - Rp 20.000')">Murid Bug <span class="price-val">Rp 20.000</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">WHAT U GET ⚠</div>
+                        <ul class="attention-list">
+                            <li>Permanen access</li>
+                            <li>Bebas bug sepuasnya</li>
+                            <li>Bug sendiri bukan drop</li>
+                            <li>Bisa open jasa bug</li>
+                            <li>Memakai bot yang berkualitas</li>
+                            <li>Dijamin work free tutor</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Murid Bug')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order Murid Bug</a>
+                </div>
+
+                <!-- KARTU: NOKOSS BY ANGGIE -->
+                <div class="app-card" data-app="Nokoss">
+                    <div class="card-header"><i class="fa-solid fa-sim-card"></i> NOKOSS BY ANGGIE</div>
+                    <ul class="price-list">
+                        <span class="sub-title">NOKOS WA & TELE</span>
+                        <li onclick="selectProduct(this, 'Nokwa v sms oribis garansi - Rp 10.000')">Nokwa v sms oribis garansi <span class="price-val">Rp 10.000</span></li>
+                        <li onclick="selectProduct(this, 'Nokwa v sms oribis nogar - Rp 4.500')">Nokwa v sms oribis nogar <span class="price-val">Rp 4.500</span></li>
+                        <li onclick="selectProduct(this, 'Nokwa v telp oribis garansi - Rp 6.500')">Nokwa v telp oribis garansi <span class="price-val">Rp 6.500</span></li>
+                        <li onclick="selectProduct(this, 'Nokwa v telp oribis nogar - Rp 3.500')">Nokwa v telp oribis nogar <span class="price-val">Rp 3.500</span></li>
+                        <li onclick="selectProduct(this, 'Nokwa v telp aoi wa garansi - Rp 5.000')">Nokwa v telp aoi wa garansi <span class="price-val">Rp 5.000</span></li>
+                        <li onclick="selectProduct(this, 'Nokwa v telp aoi wa nogar - Rp 3.500')">Nokwa v telp aoi wa nogar <span class="price-val">Rp 3.500</span></li>
+                        <li onclick="selectProduct(this, 'Nokos telg garansi - Rp 5.500')">Nokos telg garansi <span class="price-val">Rp 5.500</span></li>
+                        <li onclick="selectProduct(this, 'Nokos telg nogar - Rp 4.500')">Nokos telg nogar <span class="price-val">Rp 4.500</span></li>
+                        <li onclick="selectProduct(this, 'Nokos e-wallet - Rp 3.500')">Nokos e-wallet <span class="price-val">Rp 3.500</span></li>
+                        <li onclick="selectProduct(this, 'Nokos apk - Rp 1.000')">Nokos apk <span class="price-val">Rp 1.000</span></li>
+                        <li onclick="selectProduct(this, 'Verui - Rp 800')">Verui <span class="price-val">Rp 800</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">ATTENTION ⚠</div>
+                        <ul class="attention-list">
+                            <li>Masa garansi nokwa oribis sebulan</li>
+                            <li>Masa garansi nokwa aoi wa 2-3 minggu</li>
+                            <li>Nogar -> no garansi</li>
+                            <li>Wajib tanyakan stok sebelum tf</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Nokoss')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order Nokoss</a>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ================= TAB 7: TOPUP & SERVICES ================= -->
+        <div id="tab-topup" class="tab-content">
+            <div class="section-title"><span>TOPUP & SERVICES</span><i class="fa-solid fa-gamepad" style="color:#f8bbd0;"></i></div>
+            <div class="card-scroll-container">
+                
+                <!-- KARTU: JASA LACAK ORANG -->
+                <div class="app-card" data-app="Jasa Lacak Orang">
+                    <div class="card-header"><i class="fa-solid fa-location-crosshairs"></i> JASA LACAK ORANG</div>
+                    <ul class="price-list">
+                        <span class="sub-title">PELACAKAN NOMOR</span>
+                        <li onclick="selectProduct(this, 'Lacak Nomor - Rp 100.000')">Lacak Nomor <span class="price-val">Rp 100.000</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">U GET ⚠</div>
+                        <ul class="attention-list">
+                            <li>Cek Kartu Keluarga</li>
+                            <li>Cek E-wallet / Rekening</li>
+                            <li>Cek Lokasi</li>
+                            <li>Cek NIK</li>
+                            <li>Cek Pendidikan atau Riwayat</li>
+                            <li>Cocok cari identitas penipu, jangan disalahgunakan</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Jasa Lacak Orang')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order Lacak Orang</a>
+                </div>
+
+                <!-- KARTU: OPEN RESSELER AM -->
+                <div class="app-card" data-app="Reseller AM">
+                    <div class="card-header"><i class="fa-solid fa-user-plus"></i> OPEN RESSELER AM</div>
+                    <ul class="price-list">
+                        <span class="sub-title">JOIN RESSELER</span>
+                        <li onclick="selectProduct(this, 'Durasi Permanen - Rp 10.000')">Durasi Permanen <span class="price-val">Rp 10.000</span></li>
+                        <span class="sub-title">BENEFIT SUPPORT</span>
+                        <li>Harga AM 1y ress 100p / gene 50p</li>
+                        <li>Buik 100 acc 3.000 / 200 acc 5.000</li>
+                        <li>Bisa via log / link / gene</li>
+                        <li>Buik februari / april / desember</li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">ATTENTION ⚠</div>
+                        <ul class="attention-list">
+                            <li>Join grup Kedai Enji</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Reseller AM')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order Reseller AM</a>
+                </div>
+
+                <!-- KARTU: RESSELER APP PREM -->
+                <div class="app-card" data-app="Reseller App Prem">
+                    <div class="card-header"><i class="fa-solid fa-crown"></i> RESSELER APP PREM</div>
+                    <ul class="price-list">
+                        <span class="sub-title">PAKET LIFETIME</span>
+                        <li onclick="selectProduct(this, 'Reseller App Prem - Rp 50.000')">Reseller App Prem <span class="price-val">Rp 50.000</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">BENEFIT'S ⚠</div>
+                        <ul class="attention-list">
+                            <li>All Price Start Perakan 5p</li>
+                            <li>Contact us via WA</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Reseller App Prem')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order Ress App Prem</a>
+                </div>
+
+                <!-- KARTU: ROBUX GAMEPASS -->
+                <div class="app-card" data-app="Robux Gamepass">
+                    <div class="card-header"><i class="fa-solid fa-gamepad"></i> ROBUX GAMEPASS</div>
+                    <ul class="price-list">
+                        <span class="sub-title">PRICELIST ROBUX GP</span>
+                        <li onclick="selectProduct(this, '100R - Rp 12.500')">100R <span class="price-val">Rp 12.500</span></li>
+                        <li onclick="selectProduct(this, '200R - Rp 23.000')">200R <span class="price-val">Rp 23.000</span></li>
+                        <li onclick="selectProduct(this, '300R - Rp 34.000')">300R <span class="price-val">Rp 34.000</span></li>
+                        <li onclick="selectProduct(this, '400R - Rp 43.500')">400R <span class="price-val">Rp 43.500</span></li>
+                        <li onclick="selectProduct(this, '500R - Rp 55.000')">500R <span class="price-val">Rp 55.000</span></li>
+                        <li onclick="selectProduct(this, '700R - Rp 75.500')">700R <span class="price-val">Rp 75.500</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">NOTE ⚠</div>
+                        <ul class="attention-list">
+                            <li>Proses pending/pendding selama 7-9 hari</li>
+                            <li>Cocok untuk yang pengen santai tapi harga murah</li>
+                            <li>Via gamepasss, all trx no reff</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Robux Gamepass')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order Robux GP</a>
+                </div>
+
+                <!-- KARTU: ROBUX LOGIN -->
+                <div class="app-card" data-app="Robux Login">
+                    <div class="card-header"><i class="fa-solid fa-user-shield"></i> ROBUX VIA LOGIN</div>
+                    <ul class="price-list">
+                        <span class="sub-title">PRICELIST ROBUX LOGIN</span>
+                        <li onclick="selectProduct(this, '80r - Rp 18.000')">80r <span class="price-val">Rp 18.000</span></li>
+                        <li onclick="selectProduct(this, '160r - Rp 32.500')">160r <span class="price-val">Rp 32.500</span></li>
+                        <li onclick="selectProduct(this, '240r - Rp 45.000')">240r <span class="price-val">Rp 45.000</span></li>
+                        <li onclick="selectProduct(this, '320r - Rp 61.000')">320r <span class="price-val">Rp 61.000</span></li>
+                        <li onclick="selectProduct(this, '500r - Rp 75.000')">500r <span class="price-val">Rp 75.000</span></li>
+                        <li onclick="selectProduct(this, '1.000r - Rp 150.000')">1.000r <span class="price-val">Rp 150.000</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">NOTE ⚠</div>
+                        <ul class="attention-list">
+                            <li>Proses via login lewat username + pw</li>
+                            <li>Ga ribet buat gp, aman dan trusted</li>
+                            <li>Robux done 15+ menit</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Robux Login')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order Robux Login</a>
+                </div>
+
+                <!-- KARTU: DIAMOND GANDA (INDO, BR, GLOBAL, PH, MY/SG) -->
+                <div class="app-card" data-app="Diamond Ganda">
+                    <div class="card-header"><i class="fa-solid fa-gem"></i> DIAMOND GANDA</div>
+                    <ul class="price-list">
+                        <span class="sub-title">INDO 🇮🇩</span>
+                        <li onclick="selectProduct(this, 'Indo 50 + 50 💎 - Rp 15.000')">50 + 50 💎 <span class="price-val">Rp 15.000</span></li>
+                        <li onclick="selectProduct(this, 'Indo 150 + 150 💎 - Rp 43.500')">150 + 150 💎 <span class="price-val">Rp 43.500</span></li>
+                        <li onclick="selectProduct(this, 'Indo 250 + 250 💎 - Rp 72.500')">250 + 250 💎 <span class="price-val">Rp 72.500</span></li>
+                        <li onclick="selectProduct(this, 'Indo 500 + 500 💎 - Rp 145.000')">500 + 500 💎 <span class="price-val">Rp 145.000</span></li>
+                        <span class="sub-title">BRAZIL 🇧🇷</span>
+                        <li onclick="selectProduct(this, 'Brazil 50 + 50 💎 - Rp 10.500')">50 + 50 💎 <span class="price-val">Rp 10.500</span></li>
+                        <li onclick="selectProduct(this, 'Brazil 150 + 150 💎 - Rp 30.000')">150 + 150 💎 <span class="price-val">Rp 30.000</span></li>
+                        <li onclick="selectProduct(this, 'Brazil 250 + 250 💎 - Rp 49.000')">250 + 250 💎 <span class="price-val">Rp 49.000</span></li>
+                        <li onclick="selectProduct(this, 'Brazil 500 + 500 💎 - Rp 100.500')">500 + 500 💎 <span class="price-val">Rp 100.500</span></li>
+                        <span class="sub-title">GLOBAL 🌎</span>
+                        <li onclick="selectProduct(this, 'Global 50 + 50 💎 - Rp 12.500')">50 + 50 💎 <span class="price-val">Rp 12.500</span></li>
+                        <li onclick="selectProduct(this, 'Global 150 + 150 💎 - Rp 37.000')">150 + 150 💎 <span class="price-val">Rp 37.000</span></li>
+                        <li onclick="selectProduct(this, 'Global 250 + 250 💎 - Rp 58.000')">250 + 250 💎 <span class="price-val">Rp 58.000</span></li>
+                        <li onclick="selectProduct(this, 'Global 500 + 500 💎 - Rp 117.000')">500 + 500 💎 <span class="price-val">Rp 117.000</span></li>
+                        <span class="sub-title">PHILIPPINES 🇵🇭</span>
+                        <li onclick="selectProduct(this, 'PH 50 + 50 💎 - Rp 15.500')">50 + 50 💎 <span class="price-val">Rp 15.500</span></li>
+                        <li onclick="selectProduct(this, 'PH 150 + 150 💎 - Rp 46.000')">150 + 150 💎 <span class="price-val">Rp 46.000</span></li>
+                        <li onclick="selectProduct(this, 'PH 250 + 250 💎 - Rp 75.000')">250 + 250 💎 <span class="price-val">Rp 75.000</span></li>
+                        <li onclick="selectProduct(this, 'PH 500 + 500 💎 - Rp 115.000')">500 + 500 💎 <span class="price-val">Rp 115.000</span></li>
+                        <span class="sub-title">MY & SG 🇲🇾 🇸🇬</span>
+                        <li onclick="selectProduct(this, 'MYSG 50 + 50 💎 - Rp 15.500')">50 + 50 💎 <span class="price-val">Rp 15.500</span></li>
+                        <li onclick="selectProduct(this, 'MYSG 150 + 150 💎 - Rp 47.000')">150 + 150 💎 <span class="price-val">Rp 47.000</span></li>
+                        <li onclick="selectProduct(this, 'MYSG 250 + 250 💎 - Rp 77.000')">250 + 250 💎 <span class="price-val">Rp 77.000</span></li>
+                        <li onclick="selectProduct(this, 'MYSG 500 + 500 💎 - Rp 155.000')">500 + 500 💎 <span class="price-val">Rp 155.000</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">NOTESS ⚠</div>
+                        <ul class="attention-list">
+                            <li>Proses estimasi 1-5 menit</li>
+                            <li>Cek ID dulu sebelum tf</li>
+                            <li>All trx no reff</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Diamond Ganda')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order Diamond Ganda</a>
+                </div>
+
+                <!-- KARTU: CEK GTTC -->
+                <div class="app-card" data-app="Cek Nomor GTTC">
+                    <div class="card-header"><i class="fa-solid fa-magnifying-glass"></i> CEK NOMOR GTTC</div>
+                    <ul class="price-list">
+                        <span class="sub-title">JASA CEK</span>
+                        <li onclick="selectProduct(this, '1 Kontak - Rp 1.000')">1 Kontak <span class="price-val">Rp 1.000</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">ATTENTION ⚠</div>
+                        <ul class="attention-list">
+                            <li>Dilarang tf memakai qris all pay!</li>
+                            <li>Ss kan full smw yg di sepp</li>
+                            <li>GTTC sudah pasti prem</li>
+                            <li>All trx no reff</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Cek Nomor GTTC')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order Cek GTTC</a>
+                </div>
+
+                <!-- KARTU: JASPIN QRIS -->
+                <div class="app-card" data-app="Jaspin QRIS">
+                    <div class="card-header"><i class="fa-solid fa-qrcode"></i> JASPIN QRIS</div>
+                    <ul class="price-list">
+                        <span class="sub-title">TF QRIS DARI DANA</span>
+                        <li onclick="selectProduct(this, 'Dana 10p - 5.000 - Rp 50p')">10p - 5.000 <span class="price-val">Rp 50p</span></li>
+                        <li onclick="selectProduct(this, 'Dana 5.100 - 10.000 - Rp 100p')">5.100 - 10.000 <span class="price-val">Rp 100p</span></li>
+                        <li onclick="selectProduct(this, 'Dana 10.100 - 20.000 - Rp 150p')">10.100 - 20.000 <span class="price-val">Rp 150p</span></li>
+                        <li onclick="selectProduct(this, 'Dana 20.100 - 30.000 - Rp 200p')">20.100 - 30.000 <span class="price-val">Rp 200p</span></li>
+                        <li onclick="selectProduct(this, 'Dana 31.000 - 40.000 - Rp 250p')">31.000 - 40.000 <span class="price-val">Rp 250p</span></li>
+                        <li onclick="selectProduct(this, 'Dana 41.000 - 50.000 - Rp 300p')">41.000 - 50.000 <span class="price-val">Rp 300p</span></li>
+                        <span class="sub-title">TF QRIS DARI LUAR DANA</span>
+                        <li onclick="selectProduct(this, 'Luar 100p - 5.000 - Rp 100p')">100p - 5.000 <span class="price-val">Rp 100p</span></li>
+                        <li onclick="selectProduct(this, 'Luar 5.100 - 10.000 - Rp 200p')">5.100 - 10.000 <span class="price-val">Rp 200p</span></li>
+                        <li onclick="selectProduct(this, 'Luar 10.100 - 20.000 - Rp 300p')">10.100 - 20.000 <span class="price-val">Rp 300p</span></li>
+                        <li onclick="selectProduct(this, 'Luar 20.100 - 30.000 - Rp 400p')">20.100 - 30.000 <span class="price-val">Rp 400p</span></li>
+                        <li onclick="selectProduct(this, 'Luar 31.000 - 40.000 - Rp 500p')">31.000 - 40.000 <span class="price-val">Rp 500p</span></li>
+                        <li onclick="selectProduct(this, 'Luar 41.000 - 50.000 - Rp 600p')">41.000 - 50.000 <span class="price-val">Rp 600p</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">ATTENTION ⚠</div>
+                        <ul class="attention-list">
+                            <li>Tanyakan lebih dahulu, asal tf no proses</li>
+                            <li>Salah no bukan tanggung jawab own</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Jaspin QRIS')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order Jaspin QRIS</a>
+                </div>
+
+                <!-- KARTU: PROMO GET CONTACT -->
+                <div class="app-card" data-app="Get Contact">
+                    <div class="card-header"><i class="fa-solid fa-address-book"></i> GET CONTACT (GC)</div>
+                    <ul class="price-list">
+                        <span class="sub-title">GET CONTACT PREMIUM</span>
+                        <li onclick="selectProduct(this, 'Nogar 1 month - Rp 6.000')">Nogar 1 month <span class="price-val">Rp 6.000</span></li>
+                        <li onclick="selectProduct(this, 'Fullgar 1 month - Rp 10.000')">Fullgar 1 month <span class="price-val">Rp 10.000</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">ATTENTION ⚠</div>
+                        <ul class="attention-list">
+                            <li>Wajib tanyakan stok</li>
+                            <li>Wajib standby on saat verif</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Get Contact')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order Get Contact</a>
+                </div>
+
+                <!-- KARTU: JASA HD / REMINI -->
+                <div class="app-card" data-app="Jasa HD Remini">
+                    <div class="card-header"><i class="fa-solid fa-camera-retro"></i> JASA HD / REMINI</div>
+                    <ul class="price-list">
+                        <span class="sub-title">MENU EDIT FOTO/VIDEO</span>
+                        <li onclick="selectProduct(this, '10 Foto - Rp 1.000')">10 Foto <span class="price-val">Rp 1.000</span></li>
+                        <li onclick="selectProduct(this, '1 Video HD SW - Rp 5.000')">1 Video HD SW <span class="price-val">Rp 5.000</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">ATTENTION ⚠</div>
+                        <ul class="attention-list">
+                            <li>Berlaku hingga kelipatan</li>
+                            <li>Menu: HD, HDR, Remini</li>
+                            <li>PHP? Sung blok</li>
+                            <li>All trx no reff</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Jasa HD Remini')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order Jasa HD</a>
+                </div>
+
+                <!-- KARTU: JASA PUSH MEMBER GC -->
+                <div class="app-card" data-app="Push Member GC WA">
+                    <div class="card-header"><i class="fa-solid fa-users"></i> PUSH MEMBER GC WA</div>
+                    <ul class="price-list">
+                        <span class="sub-title">GC BIASA (MEM < 120+)</span>
+                        <li onclick="selectProduct(this, 'Biasa 5 mem - Rp 3.200')">5 mem <span class="price-val">Rp 3.200</span></li>
+                        <li onclick="selectProduct(this, 'Biasa 10 mem - Rp 4.500')">10 mem <span class="price-val">Rp 4.500</span></li>
+                        <li onclick="selectProduct(this, 'Biasa 20 mem - Rp 6.900')">20 mem <span class="price-val">Rp 6.900</span></li>
+                        <li onclick="selectProduct(this, 'Biasa 30 mem - Rp 8.800')">30 mem <span class="price-val">Rp 8.800</span></li>
+                        <li onclick="selectProduct(this, 'Biasa 40 mem - Rp 10.000')">40 mem <span class="price-val">Rp 10.000</span></li>
+                        <li onclick="selectProduct(this, 'Biasa 50 mem - Rp 11.000')">50 mem <span class="price-val">Rp 11.000</span></li>
+                        <span class="sub-title">GC KHUSUS DM (MEM > 150+)</span>
+                        <li onclick="selectProduct(this, 'DM 5 mem - Rp 4.200')">5 mem <span class="price-val">Rp 4.200</span></li>
+                        <li onclick="selectProduct(this, 'DM 10 mem - Rp 5.500')">10 mem <span class="price-val">Rp 5.500</span></li>
+                        <li onclick="selectProduct(this, 'DM 20 mem - Rp 8.700')">20 mem <span class="price-val">Rp 8.700</span></li>
+                        <li onclick="selectProduct(this, 'DM 30 mem - Rp 9.800')">30 mem <span class="price-val">Rp 9.800</span></li>
+                        <li onclick="selectProduct(this, 'DM 40 mem - Rp 10.900')">40 mem <span class="price-val">Rp 10.900</span></li>
+                        <li onclick="selectProduct(this, 'DM 50 mem - Rp 12.500')">50 mem <span class="price-val">Rp 12.500</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">NOTES ⚠</div>
+                        <ul class="attention-list">
+                            <li>Order wajib sabar, proses sesuai antrian (1 minggu/lebih)</li>
+                            <li>Pakai list ku +3k</li>
+                            <li>Inrush, g sbr g ush order. All trx no reff</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Push Member GC WA')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order Push Member</a>
+                </div>
+
+                <!-- KARTU: PUSH SALURAN WA -->
+                <div class="app-card" data-app="Push Saluran WhatsApp">
+                    <div class="card-header"><i class="fa-solid fa-bullhorn"></i> PUSH SALURAN WHATSAPP</div>
+                    <ul class="price-list">
+                        <span class="sub-title">LIST MEMBER SALURAN</span>
+                        <li onclick="selectProduct(this, '100 mem - Rp 6.000')">100 mem <span class="price-val">Rp 6.000</span></li>
+                        <li onclick="selectProduct(this, '200 mem - Rp 10.000')">200 mem <span class="price-val">Rp 10.000</span></li>
+                        <li onclick="selectProduct(this, '300 mem - Rp 16.000')">300 mem <span class="price-val">Rp 16.000</span></li>
+                        <li onclick="selectProduct(this, '500 mem - Rp 25.000')">500 mem <span class="price-val">Rp 25.000</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">ATTENTION ⚠</div>
+                        <ul class="attention-list">
+                            <li>Tidak ada permanen seumur hidup</li>
+                            <li>All trx no reff, proses no rusuh</li>
+                            <li>Max 1-7 proses, komplain setelah 7h</li>
+                            <li>Diproses sm web</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Push Saluran WhatsApp')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order Push Saluran</a>
+                </div>
+
+                <!-- KARTU: TUTOR UP DABIS -->
+                <div class="app-card" data-app="Tutor Up Dabis">
+                    <div class="card-header"><i class="fa-solid fa-graduation-cap"></i> TUTOR UP DABIS</div>
+                    <ul class="price-list">
+                        <span class="sub-title">METODE & BAHAN</span>
+                        <li onclick="selectProduct(this, 'Tutor dari aku + bahan dari kamu - Rp 10.000')">Tutor dari aku + bahan dari kamu <span class="price-val">Rp 10.000</span></li>
+                        <li onclick="selectProduct(this, 'Tutor dari aku + bahan dari aku - Rp 15.000')">Tutor dari aku + bahan dari aku <span class="price-val">Rp 15.000</span></li>
+                        <li onclick="selectProduct(this, 'Kamu tinggal tau beres (TRIMA BERES) - Rp 20.000')">Kamu tinggal tau beres (TRIMA BERES) <span class="price-val">Rp 20.000</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">ATTENTION ⚠</div>
+                        <ul class="attention-list">
+                            <li>All trx no reff kecuali kesalahan own</li>
+                            <li>Dijamin aman dan satset tergantung dana</li>
+                            <li>Gagal 3x anggi reff</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Tutor Up Dabis')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order Tutor Dabis</a>
+                </div>
+
+                <!-- KARTU: DAPIN -->
+                <div class="app-card" data-app="Dapin Kedai Enji">
+                    <div class="card-header"><i class="fa-solid fa-wallet"></i> DAPIN KEDAI ENJI</div>
+                    <ul class="price-list">
+                        <span class="sub-title">PENGEMBANGAN DANA</span>
+                        <li onclick="selectProduct(this, 'Dapin 5.000 back - Rp 10.000')">Dapin 5.000 back <span class="price-val">Rp 10.000</span></li>
+                        <li onclick="selectProduct(this, 'Dapin 10.000 back - Rp 20.000')">Dapin 10.000 back <span class="price-val">Rp 20.000</span></li>
+                        <li onclick="selectProduct(this, 'Dapin 20.000 back - Rp 30.000')">Dapin 20.000 back <span class="price-val">Rp 30.000</span></li>
+                        <span class="sub-title">INFO</span>
+                        <li>Berlaku hingga kelipatan 10k (Dapin 1-3 hari)</li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">ATTENTION ⚠</div>
+                        <ul class="attention-list">
+                            <li>Wajib send ident berupa foto KTP & KK, foto sambil pegang KTP & KK, alamat jelas, nomor saudara dll</li>
+                            <li>Wajib tepat waktu kembaliinnya, terlambat kena denda 5k/jam</li>
+                            <li>Cair only dana, tanya stok dulu</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Dapin Kedai Enji')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order Dapin</a>
+                </div>
+
+                <!-- KARTU: DIAMOND FF -->
+                <div class="app-card" data-app="Diamond Free Fire">
+                    <div class="card-header"><i class="fa-solid fa-gem"></i> DIAMOND FREE FIRE</div>
+                    <ul class="price-list">
+                        <span class="sub-title">DIAMOND REGULER</span>
+                        <li onclick="selectProduct(this, '5 💎 - Rp 1.000')">5 💎 <span class="price-val">Rp 1.000</span></li>
+                        <li onclick="selectProduct(this, '140 💎 - Rp 18.000')">140 💎 <span class="price-val">Rp 18.000</span></li>
+                        <li onclick="selectProduct(this, '280 💎 - Rp 36.500')">280 💎 <span class="price-val">Rp 36.500</span></li>
+                        <li onclick="selectProduct(this, '355 💎 - Rp 44.000')">355 💎 <span class="price-val">Rp 44.000</span></li>
+                        <li onclick="selectProduct(this, '635 💎 - Rp 78.000')">635 💎 <span class="price-val">Rp 78.000</span></li>
+                        <li onclick="selectProduct(this, '720 💎 - Rp 85.000')">720 💎 <span class="price-val">Rp 85.000</span></li>
+                        <li onclick="selectProduct(this, '1000 💎 - Rp 122.000')">1000 💎 <span class="price-val">Rp 122.000</span></li>
+                        <li onclick="selectProduct(this, '1440 💎 - Rp 125.000')">1440 💎 <span class="price-val">Rp 125.000</span></li>
+                        <li onclick="selectProduct(this, '7290 💎 - Rp 850.000')">7290 💎 <span class="price-val">Rp 850.000</span></li>
+                        <span class="sub-title">MEMBERSHIP</span>
+                        <li onclick="selectProduct(this, 'Membership Mingguan - Rp 25.000')">Mingguan <span class="price-val">Rp 25.000</span></li>
+                        <li onclick="selectProduct(this, 'Membership Bulanan - Rp 78.000')">Bulanan <span class="price-val">Rp 78.000</span></li>
+                    </ul>
+                    <div class="attention-box">
+                        <div class="attention-title">NOTE FOR BUYER ⚠</div>
+                        <ul class="attention-list">
+                            <li>Wajib tanya stok</li>
+                            <li>Proses 1-5 menit</li>
+                            <li>No refund, no rush, no spam</li>
+                            <li>Wajib sabar!</li>
+                        </ul>
+                    </div>
+                    <a href="#" onclick="sendWhatsApp(this, 'Diamond Free Fire')" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Order Diamond FF</a>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Navigasi Bawah -->
+    <div class="bottom-nav">
+        <a href="index.html"><i class="fa-solid fa-house"></i></a>
+        <i class="fa-solid fa-store active"></i>
+        <i class="fa-solid fa-magnifying-glass"></i>
+    </div>
+
+    <!-- Script Ganti Tab, Auto Scroll & Format Pesan WhatsApp -->
+    <script>
+        function openTab(event, tabId) {
+            let buttons = document.getElementsByClassName("cat-btn");
+            for (let i = 0; i < buttons.length; i++) buttons[i].classList.remove("active");
+            
+            let tabs = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < tabs.length; i++) tabs[i].classList.remove("active-tab");
+            
+            event.currentTarget.classList.add("active");
+            document.getElementById(tabId).classList.add("active-tab");
+        }
+
+        // Menyimpan pilihan produk sementara dalam kartu
+        function selectProduct(element, productDetail) {
+            const card = element.closest('.app-card');
+            if (!card) return;
+
+            // Simpan detail produk yang diklik ke atribut kartu
+            card.setAttribute('data-selected', productDetail);
+
+            // Efek visual klik pada teks list harga
+            const allItems = card.querySelectorAll('.price-list li');
+            allItems.forEach(item => item.style.color = '#e0e0e0');
+            element.style.color = '#ffb74d';
+
+            // Auto-scroll ke tombol order
+            const orderBtn = card.querySelector('.order-btn');
+            if (orderBtn) {
+                orderBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                orderBtn.classList.add('highlight-btn');
+                setTimeout(() => {
+                    orderBtn.classList.remove('highlight-btn');
+                }, 2000);
+            }
+        }
+
+        // Mengirim pesan ke WhatsApp lengkap dengan Jam, Tanggal, dan Bulan
+        function sendWhatsApp(buttonElement, appName) {
+            event.preventDefault(); // Mencegah link default
+
+            const card = buttonElement.closest('.app-card');
+            const selectedProduct = card ? card.getAttribute('data-selected') : null;
+
+            // Mengambil waktu real-time
+            const now = new Date();
+            const optionsDate = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const tanggalStr = now.toLocaleDateString('id-ID', optionsDate);
+            const jamStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+
+            // Menyusun format pesan
+            let pesan = `Halo saya mau order ${appName}`;
+            if (selectedProduct) {
+                pesan += ` - ${selectedProduct}`;
+            }
+            pesan += ` [ ${tanggalStr} - ${jamStr} ]`;
+
+            // Membuka link WhatsApp
+            const nomorWA = "6281344428484";
+            const urlWA = `https://wa.me/${nomorWA}?text=${encodeURIComponent(pesan)}`;
+            window.location.href = urlWA;
+        }
+    </script>
+</body>
+</html>
